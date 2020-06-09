@@ -4,6 +4,7 @@ package com.appsflyer.helloworld.controllers;
 import com.appsflyer.helloworld.errors.RateLimitedException;
 import com.appsflyer.helloworld.services.ClientService;
 import com.appsflyer.helloworld.services.RequestService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+
 @Controller
 public class HelloWorldController {
 
     private ClientService clientService;
     private RequestService requestService;
-    private String positiveResponse = "hello world";
+    @Value(("${positiveResponse}"))
+    private String positiveResponse;
 
     public HelloWorldController(ClientService clientService, RequestService requestService) {
         this.clientService = clientService;
@@ -28,27 +31,22 @@ public class HelloWorldController {
     public @ResponseBody
     String hello(@RequestParam(name = "clientId") int clientId) {
 
-        if (clientService.getExistingClient(clientId) == null) {
+        if (clientService.isClientMissing(clientId)) {
             clientService.addRequestForNewClient(clientId);
             return positiveResponse;
         }
 
         if (requestService.inTimeWindow(clientId)) {
-            if(requestService.isNewRequestsAllowed(clientId)){
+            if (requestService.isNewRequestsAllowed(clientId)) {
                 requestService.changeRequestAmount(clientId);
                 return positiveResponse;
-            }
-            else{
+            } else {
                 throw new RateLimitedException(clientId);
             }
-        }
-        else if(!requestService.inTimeWindow(clientId)){
+        } else {
             clientService.addRequestForNewClient(clientId);
             return positiveResponse;
 
         }
-
-        return null;
     }
-
 }

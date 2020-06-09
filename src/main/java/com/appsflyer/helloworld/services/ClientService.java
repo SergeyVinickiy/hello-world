@@ -14,19 +14,20 @@ public class ClientService {
         this.mapService = mapService;
     }
 
-    public void addRequestForNewClient(int id){
-
+    public void addRequestForNewClient(int id) {
         mapService.getMap().put(id, new Client(1, System.currentTimeMillis()));
         log.info("New user created. Id: " + id);
     }
 
-    public Client getExistingClient(int id){
-        try{
-        return mapService.getMap().get(id);}
-        catch(NullPointerException e)
-        {
+    public boolean isClientMissing(int id) {
+        Client client = mapService.getMap().get(id);
+        if (client == null) {
             log.info("Requested client is missing. Id: " + id);
-            return null; }
+            return true;
+        } else {
+            return false;
+        }
     }
-
 }
+
+

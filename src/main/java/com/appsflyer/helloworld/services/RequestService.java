@@ -24,23 +24,21 @@ public class RequestService {
         this.mapService = mapService;
     }
 
-    public void changeRequestAmount(int clientId){
+    public void changeRequestAmount(int clientId) {
         Client client = mapService.getMap().get(clientId);
         int k = client.getNumberOfRequests() + 1;
         client.setNumberOfRequests(k);
 
-        log.info("Client " + clientId + " did " + k +" requests");
+        log.info("Client " + clientId + " did " + k + " requests");
     }
 
-    public boolean inTimeWindow(int clientId){
+    public boolean inTimeWindow(int clientId) {
         long timeWindow = System.currentTimeMillis() - mapService.getMap().get(clientId).getCreationDate();
         return ((allowedTimeWindow - timeWindow) > 0);
     }
 
-    public boolean isNewRequestsAllowed(int clientId){
-
+    public boolean isNewRequestsAllowed(int clientId) {
         return (allowedRequestQuantity - mapService.getMap().get(clientId).getNumberOfRequests() > 0);
-
     }
 
 
