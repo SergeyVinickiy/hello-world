@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.TOO_MANY_REQUESTS)
 public class RateLimitedException extends RuntimeException {
 
-    public RateLimitedException(int clientId){
+    public RateLimitedException(int clientId) {
         log.info("User " + clientId + " need to wait!");
     }
 }
