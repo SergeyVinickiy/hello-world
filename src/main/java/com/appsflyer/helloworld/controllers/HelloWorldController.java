@@ -2,7 +2,6 @@ package com.appsflyer.helloworld.controllers;
 
 
 import com.appsflyer.helloworld.errors.RateLimitedException;
-import com.appsflyer.helloworld.services.ClientService;
 import com.appsflyer.helloworld.services.RequestService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,13 +15,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 public class HelloWorldController {
 
-    private ClientService clientService;
     private RequestService requestService;
     @Value(("${positiveResponse}"))
     private String positiveResponse;
 
-    public HelloWorldController(ClientService clientService, RequestService requestService) {
-        this.clientService = clientService;
+    public HelloWorldController(RequestService requestService) {
         this.requestService = requestService;
     }
 
@@ -31,8 +28,8 @@ public class HelloWorldController {
     public @ResponseBody
     String hello(@RequestParam(name = "clientId") int clientId) {
 
-        if (clientService.isClientMissing(clientId)) {
-            clientService.addRequestForNewClient(clientId);
+        if (requestService.isClientMissing(clientId)) {
+            requestService.addRequestForNewClient(clientId);
             return positiveResponse;
         }
 
@@ -44,7 +41,7 @@ public class HelloWorldController {
                 throw new RateLimitedException(clientId);
             }
         } else {
-            clientService.addRequestForNewClient(clientId);
+            requestService.addRequestForNewClient(clientId);
             return positiveResponse;
 
         }
